@@ -1,24 +1,31 @@
-@()
+@(accessToken: Option[twitter4j.auth.AccessToken])
 
 @main("MOJIPIC - 写真に文字を書き換え") {
   <nav class="light-blue lighten-4" role="navigation">
     <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo"><img src="@routes.Assets.versioned("images/logo.png")"/></a>
       <ul class="right hide-on-med-and-down">
         <li>
+          @if(accessToken.isEmpty) {
           <a class="light-blue-text text-darken-3" href="/login">twitterでログイン</a>
-          <!--<a class="light-blue-text text-darken-3" href="/logout">ログアウト</a>-->
+          } else {
+          <a class="light-blue-text text-darken-3" href="/logout">ログアウト</a>
+          }
         </li>
       </ul>
       <ul id="nav-mobile" class="side-nav">
         <li>
+          @if(accessToken.isEmpty) {
           <a href="/login">twitterでログイン</a>
-          <!--<a href="/logout">ログアウト</a>-->
+          } else {
+          <a href="/logout">ログアウト</a>
+          }
         </li>
       </ul>
       <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
     </div>
   </nav>
 
+  @if(accessToken.isDefined) {
   <div class="section no-pad-bot" id="index-banner">
     <div class="container">
       <br><br>
@@ -46,6 +53,7 @@
       <br><br>
     </div>
   </div>
+  }
 
   <div class="divider"></div>
 
@@ -60,4 +68,12 @@
       </div>
     </div>
   </footer>
+  <script>
+    var Mojipic = (function(){
+      var accessTokenUserId = @Html(accessToken.map(t => s"""${t.getUserId}""").getOrElse("null"));
+      return {
+        twitterId: function(){return accessTokenUserId;}
+      };
+    })();
+  </script>
 }
