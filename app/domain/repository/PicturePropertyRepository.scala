@@ -1,6 +1,9 @@
 package domain.repository
 
-import domain.entity.{PictureId, PictureProperty}
+import java.time.LocalDateTime
+
+import domain.entity.{PictureId, PictureProperty, TwitterId}
+
 import scala.concurrent.Future
 
 trait PicturePropertyRepository {
@@ -28,5 +31,22 @@ trait PicturePropertyRepository {
    * @return Future.sccessfull(()) 更新に成功した
    */
   def update(pictureId: PictureId, value: PictureProperty.Value): Future[Unit]
+
+  /**
+   * 投稿者のTwitter IDと最後に読み込まれた作成日時から画像のプロパティを読み込む
+   *
+   * @param twitterId 投稿者のTwitter ID
+   * @param lastCreatedTime 最後に読み込まれた作成日時
+   * @return Future.successfull(Seq(pictureProperty)) 読み込みに成功した
+   */
+  def findAllByTwitterIdAndDateTime(twitterId: TwitterId, lastCreatedTime: LocalDateTime): Future[Seq[PictureProperty]]
+
+  /**
+   * 最後に読み込まれた作成日時から画像のプロパティを読み込む
+   *
+   * @param lastCreatedTime 最後に読み込まれた作成日時
+   * @return Future.sccessfull(Seq(PictureProperty)) 読み込みに成功した
+   */
+  def findAllByDateTime(lastCreatedTime: LocalDateTime): Future[Seq[PictureProperty]]
 
 }

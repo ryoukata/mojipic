@@ -1,5 +1,7 @@
 package infrastructure.repository
 
+import java.time.LocalDateTime
+
 import com.google.common.net.MediaType
 import domain.entity.{PictureId, PictureProperty, TwitterId}
 import domain.repository.PicturePropertyRepository
@@ -102,6 +104,53 @@ class PicturePropertyRepositoryImpl extends PicturePropertyRepository {
                """.stripMargin
           sql.update().apply()
           ()
+        }
+      }
+    })
+
+  def findAllByTwitterIdAndDateTime(twitterId: TwitterId, toDateTime: LocalDateTime): Future[Seq[PictureProperty]] =
+    Future.fromTry(Try {
+      using(DB(ConnectionPool.borrow())) { db =>
+        db.readOnly { implicit session =>
+          val sql =
+            sql"""SELECT
+                  | picture_id,
+                  | status,
+                  | twitter_id,
+                  | file_name,
+                  | content_type,
+                  | overlay_text,
+                  | overlay_text_size,
+                  | original_filepath,
+                  | converted_filepath,
+                  | created_time
+                  | FROM picture_properties
+                  | WHERE twitter_id = ${twitterId.value} AND created_time > ${toDateTime} ORDER BY created_time DESC
+               """.stripMargin
+          sql.map(resultSetToPictureProperty).list().apply()
+        }
+      }
+    })
+
+  def findAllByDateTime(toDateTime: LocalDateTime): Future[Seq[PictureProperty]] =
+    Future.fromTry(Try {
+      using(DB(ConnectionPool.borrow())) { db =>
+        db.readOnly { implicit session =>
+          val sql =
+            sql"""SELECT
+                  | picture_id,
+                  | status,
+                  | twitter_id,
+                  | file_name,
+                  | content_type,
+                  | overlay_text,
+                  | overlay_text_size,
+                  | original_filepath,
+                  | converted_filepath,
+                  | created_time
+                  | FROM picture_properties WHERE created_time > ${toDateTime} ORDER BY created_time DESC
+               """.stripMargin
+          sql.map(resultSetToPictureProperty).list().apply()
         }
       }
     })
