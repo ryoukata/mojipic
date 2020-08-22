@@ -74,10 +74,10 @@
   </footer>
   <script>
     var Mojipic = (function(){
-      var accessTokenUserId = @Html(accessToken.map(t => s"""${t.getUserId}""").getOrElse("null"));
-      return {
-        twitterId: function(){return accessTokenUserId;}
-      };
+    var accessTokenUserId = @Html(accessToken.map(t => s""""${t.getUserId}"""").getOrElse("null"));
+        return {
+            twitterId : function(){return accessTokenUserId;}
+        };
     })();
   </script>
 }
